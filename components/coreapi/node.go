@@ -2,6 +2,7 @@ package coreapi
 
 import (
 	"strings"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
@@ -26,22 +27,22 @@ func info() (*infoResponse, error) {
 
 	// latest milestone
 	var latestMilestoneIndex = syncState.LatestMilestoneIndex
-	var latestMilestoneTimestamp uint32
+	//var latestMilestoneTimestamp uint32
 	var latestMilestoneIDHex string
 	cachedMilestoneLatest := deps.Storage.CachedMilestoneByIndexOrNil(latestMilestoneIndex) // milestone +1
 	if cachedMilestoneLatest != nil {
-		latestMilestoneTimestamp = cachedMilestoneLatest.Milestone().TimestampUnix()
+		//latestMilestoneTimestamp = cachedMilestoneLatest.Milestone().TimestampUnix()
 		latestMilestoneIDHex = cachedMilestoneLatest.Milestone().MilestoneIDHex()
 		cachedMilestoneLatest.Release(true) // milestone -1
 	}
 
 	// confirmed milestone index
 	var confirmedMilestoneIndex = syncState.ConfirmedMilestoneIndex
-	var confirmedMilestoneTimestamp uint32
+	//var confirmedMilestoneTimestamp uint32
 	var confirmedMilestoneIDHex string
 	cachedMilestoneConfirmed := deps.Storage.CachedMilestoneByIndexOrNil(confirmedMilestoneIndex) // milestone +1
 	if cachedMilestoneConfirmed != nil {
-		confirmedMilestoneTimestamp = cachedMilestoneConfirmed.Milestone().TimestampUnix()
+		//confirmedMilestoneTimestamp = cachedMilestoneConfirmed.Milestone().TimestampUnix()
 		confirmedMilestoneIDHex = cachedMilestoneConfirmed.Milestone().MilestoneIDHex()
 		cachedMilestoneConfirmed.Release(true) // milestone -1
 	}
@@ -60,12 +61,12 @@ func info() (*infoResponse, error) {
 			IsHealthy: deps.Tangle.IsNodeHealthy(syncState),
 			LatestMilestone: milestoneInfoResponse{
 				Index:       latestMilestoneIndex,
-				Timestamp:   latestMilestoneTimestamp,
+				Timestamp:   uint32(time.Now().Unix()), //latestMilestoneTimestamp,
 				MilestoneID: latestMilestoneIDHex,
 			},
 			ConfirmedMilestone: milestoneInfoResponse{
 				Index:       confirmedMilestoneIndex,
-				Timestamp:   confirmedMilestoneTimestamp,
+				Timestamp:   uint32(time.Now().Unix()), //confirmedMilestoneTimestamp,
 				MilestoneID: confirmedMilestoneIDHex,
 			},
 			PruningIndex: pruningIndex,

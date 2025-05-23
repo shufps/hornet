@@ -1,67 +1,22 @@
 package storage
 
 func (s *Storage) MarkStoresCorrupted() error {
-
-	var markingErr error
-	for _, h := range s.healthTrackers {
-		if err := h.MarkCorrupted(); err != nil {
-			markingErr = err
-		}
-	}
-
-	return markingErr
+	return nil
 }
 
 func (s *Storage) MarkStoresTainted() error {
-
-	var markingErr error
-	for _, h := range s.healthTrackers {
-		if err := h.MarkTainted(); err != nil {
-			markingErr = err
-		}
-	}
-
-	return markingErr
+	return nil
 }
 
 func (s *Storage) MarkStoresHealthy() error {
-
-	for _, h := range s.healthTrackers {
-		if err := h.MarkHealthy(); err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
 
 func (s *Storage) AreStoresCorrupted() (bool, error) {
-
-	for _, h := range s.healthTrackers {
-		corrupted, err := h.IsCorrupted()
-		if err != nil {
-			return true, err
-		}
-		if corrupted {
-			return true, nil
-		}
-	}
-
 	return false, nil
 }
 
 func (s *Storage) AreStoresTainted() (bool, error) {
-
-	for _, h := range s.healthTrackers {
-		tainted, err := h.IsTainted()
-		if err != nil {
-			return true, err
-		}
-		if tainted {
-			return true, nil
-		}
-	}
-
 	return false, nil
 }
 
