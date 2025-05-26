@@ -1,14 +1,10 @@
 package coreapi
 
 import (
-	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/pkg/errors"
 
-	"github.com/iotaledger/hornet/v2/pkg/common"
-	"github.com/iotaledger/hornet/v2/pkg/tipselect"
 	iotago "github.com/iotaledger/iota.go/v3"
 )
 
@@ -85,31 +81,5 @@ func info() (*infoResponse, error) {
 }
 
 func tips(c echo.Context) (*tipsResponse, error) {
-	allowSemiLazy := false
-	for query := range c.QueryParams() {
-		if strings.ToLower(query) == "allowsemilazy" {
-			allowSemiLazy = true
-
-			break
-		}
-	}
-
-	var tips iotago.BlockIDs
-	var err error
-
-	if !allowSemiLazy {
-		tips, err = deps.TipSelector.SelectNonLazyTips()
-	} else {
-		tips, err = deps.TipSelector.SelectTipsWithSemiLazyAllowed()
-	}
-
-	if err != nil {
-		if errors.Is(err, common.ErrNodeNotSynced) || errors.Is(err, tipselect.ErrNoTipsAvailable) {
-			return nil, errors.WithMessage(echo.ErrServiceUnavailable, err.Error())
-		}
-
-		return nil, err
-	}
-
-	return &tipsResponse{Tips: tips.ToHex()}, nil
+	return &tipsResponse{Tips: []string{"0x0000000000000000000000000000000000000000000000000000000000000000"}}, nil
 }
