@@ -81,5 +81,15 @@ func info() (*infoResponse, error) {
 }
 
 func tips(c echo.Context) (*tipsResponse, error) {
-	return &tipsResponse{Tips: []string{"0x0000000000000000000000000000000000000000000000000000000000000000"}}, nil
+	// return random 8 tips from blocks confirmed by the last milestone (17011900)
+	return &tipsResponse{Tips: []string{
+		"0xae75d93d1ea3e0a8bee2245cd33f394f39f1cb400b0e856ba9f4e29ed8c67b42",
+		"0x860c510dc4dc21c612ae617e560c3b997b9fa111713c4952450a69f4b0fe2dde",
+		"0x6bb8f6d4b4bc69b385a99844581f3f0d8bcb74d629bcda3b88fca390ddb517ce",
+		"0x4b9a57dca736697df5dfc5e4eaf67f8607f7715f8713036b815e0b67ebe8fb07",
+		"0x2740938a995a7c87446c66f1b013cb10ee269ce7c8719eafd6ba4e66a686b0ff",
+		"0x53be53cf1614d7e3fc05a479134c8925ddaa49031aedf6b8b9d999bccf52d8c6",
+		"0xba7a2ccb27f6fe91b72f480ea5730a622f8f85577081d22cb2af78cd52ad4b03",
+		"0x77f062528b22f7e29d6a157792534c1ceef2765e4e47d6e9a2775fe71fbac6d9",
+	}}, nil
 }
