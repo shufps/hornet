@@ -503,10 +503,6 @@ func AddFeature(feature string) {
 func checkNodeAlmostSynced() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if !deps.SyncManager.IsNodeAlmostSynced() {
-				return errors.WithMessage(echo.ErrServiceUnavailable, "node is not synced")
-			}
-
 			return next(c)
 		}
 	}
