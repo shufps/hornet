@@ -1,13 +1,10 @@
 package coreapi
 
 import (
-	"strings"
+	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/pkg/errors"
 
-	"github.com/iotaledger/hornet/v2/pkg/common"
-	"github.com/iotaledger/hornet/v2/pkg/tipselect"
 	iotago "github.com/iotaledger/iota.go/v3"
 )
 
@@ -26,22 +23,22 @@ func info() (*infoResponse, error) {
 
 	// latest milestone
 	var latestMilestoneIndex = syncState.LatestMilestoneIndex
-	var latestMilestoneTimestamp uint32
+	//var latestMilestoneTimestamp uint32
 	var latestMilestoneIDHex string
 	cachedMilestoneLatest := deps.Storage.CachedMilestoneByIndexOrNil(latestMilestoneIndex) // milestone +1
 	if cachedMilestoneLatest != nil {
-		latestMilestoneTimestamp = cachedMilestoneLatest.Milestone().TimestampUnix()
+		//latestMilestoneTimestamp = cachedMilestoneLatest.Milestone().TimestampUnix()
 		latestMilestoneIDHex = cachedMilestoneLatest.Milestone().MilestoneIDHex()
 		cachedMilestoneLatest.Release(true) // milestone -1
 	}
 
 	// confirmed milestone index
 	var confirmedMilestoneIndex = syncState.ConfirmedMilestoneIndex
-	var confirmedMilestoneTimestamp uint32
+	//var confirmedMilestoneTimestamp uint32
 	var confirmedMilestoneIDHex string
 	cachedMilestoneConfirmed := deps.Storage.CachedMilestoneByIndexOrNil(confirmedMilestoneIndex) // milestone +1
 	if cachedMilestoneConfirmed != nil {
-		confirmedMilestoneTimestamp = cachedMilestoneConfirmed.Milestone().TimestampUnix()
+		//confirmedMilestoneTimestamp = cachedMilestoneConfirmed.Milestone().TimestampUnix()
 		confirmedMilestoneIDHex = cachedMilestoneConfirmed.Milestone().MilestoneIDHex()
 		cachedMilestoneConfirmed.Release(true) // milestone -1
 	}
@@ -60,12 +57,12 @@ func info() (*infoResponse, error) {
 			IsHealthy: deps.Tangle.IsNodeHealthy(syncState),
 			LatestMilestone: milestoneInfoResponse{
 				Index:       latestMilestoneIndex,
-				Timestamp:   latestMilestoneTimestamp,
+				Timestamp:   uint32(time.Now().Unix()), //latestMilestoneTimestamp,
 				MilestoneID: latestMilestoneIDHex,
 			},
 			ConfirmedMilestone: milestoneInfoResponse{
 				Index:       confirmedMilestoneIndex,
-				Timestamp:   confirmedMilestoneTimestamp,
+				Timestamp:   uint32(time.Now().Unix()), //confirmedMilestoneTimestamp,
 				MilestoneID: confirmedMilestoneIDHex,
 			},
 			PruningIndex: pruningIndex,
@@ -84,31 +81,15 @@ func info() (*infoResponse, error) {
 }
 
 func tips(c echo.Context) (*tipsResponse, error) {
-	allowSemiLazy := false
-	for query := range c.QueryParams() {
-		if strings.ToLower(query) == "allowsemilazy" {
-			allowSemiLazy = true
-
-			break
-		}
-	}
-
-	var tips iotago.BlockIDs
-	var err error
-
-	if !allowSemiLazy {
-		tips, err = deps.TipSelector.SelectNonLazyTips()
-	} else {
-		tips, err = deps.TipSelector.SelectTipsWithSemiLazyAllowed()
-	}
-
-	if err != nil {
-		if errors.Is(err, common.ErrNodeNotSynced) || errors.Is(err, tipselect.ErrNoTipsAvailable) {
-			return nil, errors.WithMessage(echo.ErrServiceUnavailable, err.Error())
-		}
-
-		return nil, err
-	}
-
-	return &tipsResponse{Tips: tips.ToHex()}, nil
+	// return random 8 tips from blocks confirmed by the last milestone (17011900)
+	return &tipsResponse{Tips: []string{
+		"0xae75d93d1ea3e0a8bee2245cd33f394f39f1cb400b0e856ba9f4e29ed8c67b42",
+		"0x860c510dc4dc21c612ae617e560c3b997b9fa111713c4952450a69f4b0fe2dde",
+		"0x6bb8f6d4b4bc69b385a99844581f3f0d8bcb74d629bcda3b88fca390ddb517ce",
+		"0x4b9a57dca736697df5dfc5e4eaf67f8607f7715f8713036b815e0b67ebe8fb07",
+		"0x2740938a995a7c87446c66f1b013cb10ee269ce7c8719eafd6ba4e66a686b0ff",
+		"0x53be53cf1614d7e3fc05a479134c8925ddaa49031aedf6b8b9d999bccf52d8c6",
+		"0xba7a2ccb27f6fe91b72f480ea5730a622f8f85577081d22cb2af78cd52ad4b03",
+		"0x77f062528b22f7e29d6a157792534c1ceef2765e4e47d6e9a2775fe71fbac6d9",
+	}}, nil
 }

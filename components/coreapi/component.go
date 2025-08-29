@@ -252,7 +252,7 @@ func configure() error {
 			return httpserver.JSONResponse(c, http.StatusOK, resp)
 		}
 	})
-
+	/* sending blocks is disabled
 	routeGroup.POST(RouteBlocks, func(c echo.Context) error {
 		resp, err := sendBlock(c)
 		if err != nil {
@@ -262,7 +262,7 @@ func configure() error {
 
 		return httpserver.JSONResponse(c, http.StatusCreated, resp)
 	}, checkNodeAlmostSynced(), checkUpcomingUnsupportedProtocolVersion())
-
+	*/
 	routeGroup.GET(RouteTransactionsIncludedBlock, func(c echo.Context) error {
 		mimeType, err := httpserver.GetAcceptHeaderContentType(c, httpserver.MIMEApplicationVendorIOTASerializerV1, echo.MIMEApplicationJSON)
 		if err != nil && err != httpserver.ErrNotAcceptable {
@@ -503,10 +503,6 @@ func AddFeature(feature string) {
 func checkNodeAlmostSynced() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if !deps.SyncManager.IsNodeAlmostSynced() {
-				return errors.WithMessage(echo.ErrServiceUnavailable, "node is not synced")
-			}
-
 			return next(c)
 		}
 	}
